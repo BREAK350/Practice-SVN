@@ -7,8 +7,10 @@ public class RemoveFileAction implements FileAction {
 
 	@Override
 	public void perform(List<File> files) {
-		for (File file : files) {
-			remove(file, 0);
+		if (files != null) {
+			for (File file : files) {
+				remove(file, 0);
+			}
 		}
 	}
 
