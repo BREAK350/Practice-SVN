@@ -1,4 +1,4 @@
-package break350.svn.generator;
+package break350.repository.generator;
 
 import java.io.File;
 import java.util.List;

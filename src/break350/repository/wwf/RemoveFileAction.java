@@ -1,4 +1,4 @@
-package break350.svn.wwf;
+package break350.repository.wwf;
 
 import java.io.File;
 import java.util.List;
@@ -28,9 +28,11 @@ public class RemoveFileAction implements FileAction {
 		String fname = "'" + file.getAbsolutePath() + "'";
 		String prefix = createPrefix(level);
 		if (file.exists()) {
-			File[] files = file.listFiles();
-			for (int i = 0; i < files.length; i++) {
-				remove(files[i], level + 1);
+			if (file.isDirectory()) {
+				File[] files = file.listFiles();
+				for (int i = 0; i < files.length; i++) {
+					remove(files[i], level + 1);
+				}
 			}
 			if (file.delete()) {
 				System.out.println(prefix + "The file " + fname
