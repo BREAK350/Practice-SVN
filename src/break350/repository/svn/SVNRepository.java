@@ -72,12 +72,11 @@ public class SVNRepository implements Repository {
 			System.out
 					.println("Repository latest revision (before committing): "
 							+ latestRevision);
-
-			ISVNEditor editor = repository.getCommitEditor("directory deleted",
-					null);
+			ISVNEditor editor = repository.getCommitEditor("directory deleted:"
+					+ files, null);
 			for (String file : files) {
 				SVNCommitInfo commitInfo = deleteDir(editor, file);
-				System.out.println("The directory was deleted: " + commitInfo);
+				System.out.println("The entry was deleted: " + commitInfo);
 			}
 
 			latestRevision = repository.getLatestRevision();
