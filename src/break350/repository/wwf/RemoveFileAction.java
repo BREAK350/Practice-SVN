@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 
 public class RemoveFileAction implements FileAction {
+	public static boolean printSubFiles = true;
 
 	@Override
 	public void perform(List<File> files) {
@@ -30,6 +31,8 @@ public class RemoveFileAction implements FileAction {
 				comment = "Error: the file " + fname + " is not deleted";
 			}
 		}
-		System.out.println(comment);
+		if (level == 0 || printSubFiles) {
+			System.out.println(comment);
+		}
 	}
 }
