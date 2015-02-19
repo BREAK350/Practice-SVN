@@ -1,11 +1,7 @@
 package break350.repository;
 
-import java.io.File;
+import java.util.List;
 
 public interface Repository {
-	public void load();
-
-	public void commit(String comment);
-
-	public File getRoot();
+	public void removeFiles(List<String> files);
 }
