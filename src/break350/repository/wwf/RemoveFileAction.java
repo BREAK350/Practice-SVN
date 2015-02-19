@@ -27,6 +27,7 @@ public class RemoveFileAction implements FileAction {
 	private void remove(File file, int level) {
 		String fname = "'" + file.getAbsolutePath() + "'";
 		String prefix = createPrefix(level);
+		String comment = "File not found: " + fname;
 		if (file.exists()) {
 			if (file.isDirectory()) {
 				File[] files = file.listFiles();
@@ -35,14 +36,11 @@ public class RemoveFileAction implements FileAction {
 				}
 			}
 			if (file.delete()) {
-				System.out.println(prefix + "The file " + fname
-						+ " is successfully deleted");
+				comment = "The file " + fname + " is successfully deleted";
 			} else {
-				System.out.println(prefix + "Error: the file " + fname
-						+ " is not deleted");
+				comment = "Error: the file " + fname + " is not deleted";
 			}
-		} else {
-			System.out.println(prefix + "File not found: " + fname);
 		}
+		System.out.println(prefix + comment);
 	}
 }
