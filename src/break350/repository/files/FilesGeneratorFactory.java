@@ -10,9 +10,7 @@ public class FilesGeneratorFactory {
 			@Override
 			public List<String> generate() {
 				List<String> list = new ArrayList<String>();
-				list.add("");
-				list.add("");
-				list.add("");
+				list.add("/Джава код/workspace/Dictionary/src/test");
 				return list;
 			}
 		};

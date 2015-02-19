@@ -4,6 +4,17 @@ import break350.repository.svn.SVNRepository;
 
 public class RepositoryFactory {
 	public static Repository getRepository() {
-		return new SVNRepository();
+		String url = Main.getProperties().getProperty("url");
+		String userName = Main.getProperties().getProperty("userName");
+		String userPassword = Main.getProperties().getProperty("userPassword");
+
+		System.out.println(url + " " + userName + " " + userPassword);
+
+		SVNRepository svnRepository = new SVNRepository();
+		svnRepository.setUrl(url);
+		svnRepository.setUserName(userName);
+		svnRepository.setUserPassword(userPassword);
+
+		return svnRepository;
 	}
 }

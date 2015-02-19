@@ -23,6 +23,18 @@ public class SVNRepository implements Repository {
 	private String userName = "";
 	private String userPassword = "";
 
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public void setUserPassword(String userPassword) {
+		this.userPassword = userPassword;
+	}
+
 	private org.tmatesoft.svn.core.io.SVNRepository getRepository()
 			throws Exception {
 		SVNURL url = SVNURL.parseURIEncoded(this.url);
@@ -63,15 +75,17 @@ public class SVNRepository implements Repository {
 
 			ISVNEditor editor = repository.getCommitEditor("directory deleted",
 					null);
-			SVNCommitInfo commitInfo = deleteDir(editor, "test");
-			System.out.println("The directory was deleted: " + commitInfo);
+			for (String file : files) {
+				SVNCommitInfo commitInfo = deleteDir(editor, file);
+				System.out.println("The directory was deleted: " + commitInfo);
+			}
 
 			latestRevision = repository.getLatestRevision();
 			System.out
 					.println("Repository latest revision (after committing): "
 							+ latestRevision);
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		}
 	}
 
