@@ -15,7 +15,6 @@ import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNCommitClient;
-import org.tmatesoft.svn.core.wc.SVNCommitPacket;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
@@ -82,11 +81,6 @@ public class SVNRepository implements Repository {
 		SVNRevision pegRevision = SVNRevision.create(-1);
 		// the revision number which is required to be exported.
 		SVNRevision revision = SVNRevision.create(-1);
-		// if there is any special character for end of line (in the file) then
-		// it is required. For our use case, //it can be null, assuming there
-		// are no special characters. In this case the OS specific EoF style
-		// will //be assumed
-		String eolStyle = null;
 		// this would force the operation
 		boolean force = true;
 		// Till what extent under a directory, export is required, is determined
