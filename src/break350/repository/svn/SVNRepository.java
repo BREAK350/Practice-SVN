@@ -101,30 +101,26 @@ public class SVNRepository implements Repository {
 		return SVNDepth.INFINITY;
 	}
 
+	private static SVNURL[] toSVNURL(String root, List<String> files)
+			throws SVNException {
+		SVNURL repositoryPath = SVNURL.fromFile(new File(root));
+		SVNURL urls[] = new SVNURL[files.size()];
+		for (int i = 0; i < files.size(); i++) {
+			urls[i] = repositoryPath;// .appendPath(files.get(i), false);
+		}
+		return urls;
+	}
+
 	@Override
 	public void removeFiles(List<String> files) {
 		System.out.println(files);
 		try {
 			SVNClientManager clientManager = getSVNClientManager();
-			SVNURL repositoryPath = SVNURL.fromFile(new File(root));
-			System.out.println(repositoryPath.toDecodedString());
-			SVNURL urls[] = new SVNURL[files.size()];
-			for (int i = 0; i < files.size(); i++) {
-				urls[i] = SVNURL.parseURIEncoded(repositoryPath.toString()
-						+ "/" + files.get(i));// repositoryPath.appendPath(files.get(i),
-												// false);
-			}
+			SVNURL urls[] = toSVNURL(root, files);
 			System.out.println(Arrays.toString(urls));
 			String commitMessage = "deleted files";
-			SVNCommitPacket svnCommitPacket = SVNCommitPacket.EMPTY;
 			SVNCommitClient commitClient = clientManager.getCommitClient();
-			commitClient.doDelete(new SVNURL[] { repositoryPath },
-					commitMessage);
-			// SVNCommitClient commitClient = clientManager.getCommitClient();
-			//
-			// commitClient.doCommit(new File[] { new File(files.get(0)) },
-			// true,
-			// commitMessage, null, null, false, false, getSVNDepth());
+			commitClient.doDelete(urls, commitMessage);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
