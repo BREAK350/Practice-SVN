@@ -1,18 +1,10 @@
 package break350.repository.files;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
 
 public class FilesGeneratorFactory {
 	public static FilesGenerator getGenerator() {
-		return new FilesGenerator() {
-
-			@Override
-			public List<String> generate() {
-				List<String> list = new ArrayList<String>();
-				list.add("Джава код/workspace/Dictionary/src/wt/SimpleWordTranslation.java");
-				return list;
-			}
-		};
+		File file = new File("file.txt");
+		return new FilesGeneratorFromFile(file);
 	}
 }

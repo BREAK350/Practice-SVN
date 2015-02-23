@@ -40,8 +40,8 @@ public class Main {
 		FilesGenerator filesGenerator = FilesGeneratorFactory.getGenerator();
 
 		Repository repository = RepositoryFactory.getRepository();
-		// repository.removeFiles(filesGenerator.generate());
 		repository.exportFromRemoteRepository();
+		repository.removeFiles(filesGenerator.generate());
 	}
 
 }
