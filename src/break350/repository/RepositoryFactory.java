@@ -8,7 +8,8 @@ public class RepositoryFactory {
 		String userName = Main.getProperties().getProperty("userName");
 		String userPassword = Main.getProperties().getProperty("userPassword");
 
-		System.out.println(url + " " + userName + " " + userPassword);
+		System.out.println("url = " + url + " login = " + userName
+				+ " password = " + userPassword);
 
 		SVNRepository svnRepository = new SVNRepository();
 		svnRepository.setUrl(url);
