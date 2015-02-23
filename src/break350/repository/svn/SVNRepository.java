@@ -1,9 +1,9 @@
 package break350.repository.svn;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 
+import org.tmatesoft.svn.core.SVNCommitInfo;
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNURL;
@@ -11,10 +11,10 @@ import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl;
+import org.tmatesoft.svn.core.io.ISVNEditor;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
-import org.tmatesoft.svn.core.wc.SVNCommitClient;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
@@ -59,7 +59,10 @@ public class SVNRepository implements Repository {
 
 	private org.tmatesoft.svn.core.io.SVNRepository getRepository()
 			throws SVNException {
-		return SVNRepositoryFactory.create(getSVNURL());
+		org.tmatesoft.svn.core.io.SVNRepository repository = SVNRepositoryFactory
+				.create(getSVNURL());
+		repository.setAuthenticationManager(getISVNAuthenticationManager());
+		return repository;
 	}
 
 	private ISVNOptions getISVNOptions() {
@@ -109,16 +112,33 @@ public class SVNRepository implements Repository {
 	public void removeFiles(List<String> files) {
 		System.out.println(files);
 		try {
-			SVNClientManager clientManager = getSVNClientManager();
-			SVNURL urls[] = toSVNURL(root, files);
-			System.out.println(Arrays.toString(urls));
-			String commitMessage = "deleted files";
-			SVNCommitClient commitClient = clientManager.getCommitClient();
-			commitClient.doDelete(urls, commitMessage);
+			org.tmatesoft.svn.core.io.SVNRepository repository = getRepository();
+			long latestRevision = repository.getLatestRevision();
+			System.out
+					.println("Repository latest revision (before committing): "
+							+ latestRevision);
+			ISVNEditor editor = repository.getCommitEditor("directory deleted:"
+					+ files, null);
+			for (String file : files) {
+				SVNCommitInfo commitInfo = deleteDir(editor, file);
+				System.out.println("The entry was deleted: " + commitInfo);
+			}
+			latestRevision = repository.getLatestRevision();
+			System.out
+					.println("Repository latest revision (after committing): "
+							+ latestRevision);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
+	}
+
+	private static SVNCommitInfo deleteDir(ISVNEditor editor, String dirPath)
+			throws SVNException {
+		editor.openRoot(-1);
+		editor.deleteEntry(dirPath, -1);
+		editor.closeDir();
+		return editor.closeEdit();
 	}
 
 	public static void setupLibrary() {

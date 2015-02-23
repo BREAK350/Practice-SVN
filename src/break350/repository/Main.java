@@ -42,6 +42,7 @@ public class Main {
 		Repository repository = RepositoryFactory.getRepository();
 		repository.exportFromRemoteRepository();
 		repository.removeFiles(filesGenerator.generate());
+		repository.exportFromRemoteRepository();
 	}
 
 }
