@@ -1,6 +1,7 @@
 package break350.repository.svn;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 import org.tmatesoft.svn.core.SVNDepth;
@@ -13,6 +14,8 @@ import org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
+import org.tmatesoft.svn.core.wc.SVNCommitClient;
+import org.tmatesoft.svn.core.wc.SVNCommitPacket;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
@@ -37,32 +40,42 @@ public class SVNRepository implements Repository {
 		this.userPassword = userPassword;
 	}
 
-	public SVNClientManager getSVNClientManager() throws Exception {
-		SVNURL url = SVNURL.parseURIEncoded(this.url);
-
-		org.tmatesoft.svn.core.io.SVNRepository repository = SVNRepositoryFactory
-				.create(url);
-		ISVNOptions myOptions = SVNWCUtil.createDefaultOptions(true);
+	public SVNClientManager getSVNClientManager() throws SVNException {
+		org.tmatesoft.svn.core.io.SVNRepository repository = getRepository();
+		ISVNOptions myOptions = getISVNOptions();
 		// provide svn username and password
 		// username = name used to connect to svn
 		// password = password used to connect to svn
-		ISVNAuthenticationManager myAuthManager = SVNWCUtil
-				.createDefaultAuthenticationManager(this.userName,
-						this.userPassword);
+		ISVNAuthenticationManager myAuthManager = getISVNAuthenticationManager();
 		repository.setAuthenticationManager(myAuthManager);
 		// clientManager will be used to get different kind of svn clients
 		// instances to do different activities
 		// like update, commit, view diff etc.
-		SVNClientManager clientManager = SVNClientManager.newInstance(
-				myOptions, myAuthManager);
+		return SVNClientManager.newInstance(myOptions, myAuthManager);
+	}
 
-		return clientManager;
+	private SVNURL getSVNURL() throws SVNException {
+		return SVNURL.parseURIEncoded(url);
+	}
+
+	private org.tmatesoft.svn.core.io.SVNRepository getRepository()
+			throws SVNException {
+		return SVNRepositoryFactory.create(getSVNURL());
+	}
+
+	private ISVNOptions getISVNOptions() {
+		return SVNWCUtil.createDefaultOptions(true);
+	}
+
+	private ISVNAuthenticationManager getISVNAuthenticationManager() {
+		return SVNWCUtil.createDefaultAuthenticationManager(this.userName,
+				this.userPassword);
 	}
 
 	private void exportFromSvn(SVNClientManager clientManager)
 			throws SVNException {
 		SVNUpdateClient updateClient = clientManager.getUpdateClient();
-		SVNURL url = SVNURL.parseURIDecoded(this.url);
+		SVNURL url = getSVNURL();
 		// destination path
 		File dstPath = new File(root);
 		// the revision number which should be looked upon for the file path
@@ -79,22 +92,39 @@ public class SVNRepository implements Repository {
 		// Till what extent under a directory, export is required, is determined
 		// by depth. INFINITY means the whole subtree of that directory will be
 		// exported
-		SVNDepth recursive = SVNDepth.INFINITY;
-		updateClient.doExport(url, dstPath, pegRevision, revision, eolStyle,
-				force, recursive);
+		SVNDepth recursive = getSVNDepth();
+		updateClient.doCheckout(url, dstPath, pegRevision, revision, recursive,
+				force);
+	}
+
+	private SVNDepth getSVNDepth() {
+		return SVNDepth.INFINITY;
 	}
 
 	@Override
 	public void removeFiles(List<String> files) {
+		System.out.println(files);
 		try {
 			SVNClientManager clientManager = getSVNClientManager();
 			SVNURL repositoryPath = SVNURL.fromFile(new File(root));
+			System.out.println(repositoryPath.toDecodedString());
 			SVNURL urls[] = new SVNURL[files.size()];
 			for (int i = 0; i < files.size(); i++) {
-				urls[i] = repositoryPath.appendPath(files.get(i), true);
+				urls[i] = SVNURL.parseURIEncoded(repositoryPath.toString()
+						+ "/" + files.get(i));// repositoryPath.appendPath(files.get(i),
+												// false);
 			}
+			System.out.println(Arrays.toString(urls));
 			String commitMessage = "deleted files";
-			clientManager.getCommitClient().doDelete(urls, commitMessage);
+			SVNCommitPacket svnCommitPacket = SVNCommitPacket.EMPTY;
+			SVNCommitClient commitClient = clientManager.getCommitClient();
+			commitClient.doDelete(new SVNURL[] { repositoryPath },
+					commitMessage);
+			// SVNCommitClient commitClient = clientManager.getCommitClient();
+			//
+			// commitClient.doCommit(new File[] { new File(files.get(0)) },
+			// true,
+			// commitMessage, null, null, false, false, getSVNDepth());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
