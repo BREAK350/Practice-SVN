@@ -65,7 +65,8 @@ public class SVNRepository implements Repository {
 		return clientManager;
 	}
 
-	public void commitToSvn(SVNClientManager clientManager) throws SVNException {
+	private void commitToSvn(SVNClientManager clientManager)
+			throws SVNException {
 		SVNCommitClient commitClient = clientManager.getCommitClient();
 		File fileToCheckin = new File("LocalDir/SampleFileFolder/SampleFile1");
 		boolean recursive = true;
@@ -77,7 +78,7 @@ public class SVNRepository implements Repository {
 		System.out.println(importInfo.getNewRevision());
 	}
 
-	public void exportFromSvn(SVNClientManager clientManager)
+	private void exportFromSvn(SVNClientManager clientManager)
 			throws SVNException {
 		SVNUpdateClient updateClient = clientManager.getUpdateClient();
 		SVNURL url = SVNURL.parseURIDecoded(this.url);
@@ -170,5 +171,14 @@ public class SVNRepository implements Repository {
 		DAVRepositoryFactory.setup();
 		SVNRepositoryFactoryImpl.setup();
 		FSRepositoryFactory.setup();
+	}
+
+	@Override
+	public void exportFromRemoteRepository() {
+		try {
+			exportFromSvn(getSVNClientManager());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

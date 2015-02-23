@@ -16,6 +16,8 @@ public class RepositoryFactory {
 		svnRepository.setUserName(userName);
 		svnRepository.setUserPassword(userPassword);
 
+		SVNRepository.setupLibrary();
+
 		return svnRepository;
 	}
 }

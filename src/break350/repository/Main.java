@@ -7,7 +7,6 @@ import java.util.Properties;
 
 import break350.repository.files.FilesGenerator;
 import break350.repository.files.FilesGeneratorFactory;
-import break350.repository.svn.SVNRepository;
 
 public class Main {
 	public final static String configFileName = "config.properties";
@@ -40,15 +39,9 @@ public class Main {
 
 		FilesGenerator filesGenerator = FilesGeneratorFactory.getGenerator();
 
-		SVNRepository repository = (SVNRepository) RepositoryFactory
-				.getRepository();
+		Repository repository = RepositoryFactory.getRepository();
 		// repository.removeFiles(filesGenerator.generate());
-		SVNRepository.setupLibrary();
-		try {
-			repository.exportFromSvn(repository.getSVNClientManager());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		repository.exportFromRemoteRepository();
 	}
 
 }
