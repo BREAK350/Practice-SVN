@@ -15,9 +15,12 @@ import org.tmatesoft.svn.core.io.ISVNEditor;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.wc.ISVNOptions;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
+import org.tmatesoft.svn.core.wc.SVNCommitClient;
+import org.tmatesoft.svn.core.wc.SVNCommitPacket;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
+import org.tmatesoft.svn.core.wc2.SvnCommit;
 
 import break350.repository.Repository;
 
@@ -98,17 +101,6 @@ public class SVNRepository implements Repository {
 		return SVNDepth.INFINITY;
 	}
 
-	private static SVNURL[] toSVNURL(String root, List<String> files)
-			throws SVNException {
-		SVNURL repositoryPath = SVNURL.fromFile(new File(root));
-		SVNURL urls[] = new SVNURL[files.size()];
-		for (int i = 0; i < files.size(); i++) {
-			urls[i] = repositoryPath;// .appendPath(files.get(i), false);
-		}
-		return urls;
-	}
-
-	@Override
 	public void removeFiles(List<String> files) {
 		System.out.println(files);
 		try {
@@ -154,5 +146,46 @@ public class SVNRepository implements Repository {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@SuppressWarnings("deprecation")
+	private void commitToSvn(SVNClientManager clientManager, File[] files)
+			throws SVNException {
+		SvnCommit commit =  clientManager.getOperationFactory().createCommit();
+		commit.setCommitMessage("");
+		
+		SVNCommitClient commitClient = clientManager.getCommitClient();
+		SVNCommitPacket packets = commitClient.doCollectCommitItems(files,
+				false, true, getSVNDepth(), null);
+		System.out.println(packets);
+		boolean recursive = true;
+		// for (File file : files) {
+		// SVNCommitInfo importInfo = commitClient.doImport(file, getSVNURL(),
+		// "testing svn kit integration", true);
+		// System.out.println(importInfo);
+		// }
+		SVNCommitInfo importInfo = commitClient.doCommit(packets, false,
+				"testing svn kit integration");
+		// SVNCommitInfo importInfo = commitClient.doCommit(files, false,
+		// "testing svn kit integration", true, recursive);
+		System.out.println(importInfo);
+
+		// SVNCommitInfo importInfo = commitClient.doCommit(files, false,
+		// "testing svn kit integration", null, null, false, false,
+		// getSVNDepth());
+	}
+
+	@Override
+	public void synchronize(List<File> files) {
+		try {
+			commitToSvn(getSVNClientManager(), files.toArray(new File[0]));
+		} catch (SVNException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public File getRoot() {
+		return new File(root);
 	}
 }

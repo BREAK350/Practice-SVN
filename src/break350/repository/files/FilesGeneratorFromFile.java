@@ -17,15 +17,15 @@ public class FilesGeneratorFromFile implements FilesGenerator {
 	}
 
 	@Override
-	public List<String> generate() {
-		List<String> files = new ArrayList<String>();
+	public List<File> generate(File root) {
+		List<File> files = new ArrayList<File>();
 		try {
 			Reader r = new InputStreamReader(new FileInputStream(file), "UTF-8");
 			BufferedReader reader = new BufferedReader(r);
 			String row;
 			while ((row = reader.readLine()) != null) {
-				// File f = new File(root, row);
-				files.add(row);
+				File file = new File(root, row);
+				files.add(file);
 			}
 			reader.close();
 		} catch (IOException e) {
