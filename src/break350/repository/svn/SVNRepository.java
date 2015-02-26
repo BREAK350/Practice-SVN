@@ -98,16 +98,6 @@ public class SVNRepository implements Repository {
 		return SVNDepth.INFINITY;
 	}
 
-	private static SVNURL[] toSVNURL(String root, List<String> files)
-			throws SVNException {
-		SVNURL repositoryPath = SVNURL.fromFile(new File(root));
-		SVNURL urls[] = new SVNURL[files.size()];
-		for (int i = 0; i < files.size(); i++) {
-			urls[i] = repositoryPath;// .appendPath(files.get(i), false);
-		}
-		return urls;
-	}
-
 	@Override
 	public void removeFiles(List<String> files) {
 		System.out.println(files);
