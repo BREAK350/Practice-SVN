@@ -6,6 +6,7 @@ import java.util.List;
 import org.tmatesoft.svn.core.SVNCommitInfo;
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.SVNProperties;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
@@ -151,28 +152,29 @@ public class SVNRepository implements Repository {
 	@SuppressWarnings("deprecation")
 	private void commitToSvn(SVNClientManager clientManager, File[] files)
 			throws SVNException {
-		SvnCommit commit =  clientManager.getOperationFactory().createCommit();
-		commit.setCommitMessage("");
-		
+
 		SVNCommitClient commitClient = clientManager.getCommitClient();
-		SVNCommitPacket packets = commitClient.doCollectCommitItems(files,
-				false, true, getSVNDepth(), null);
-		System.out.println(packets);
+		SVNCommitPacket commitPacket = commitClient.doCollectCommitItems(files,
+				true, true, getSVNDepth(), null);
+		System.out.println(commitPacket);
 		boolean recursive = true;
-		// for (File file : files) {
-		// SVNCommitInfo importInfo = commitClient.doImport(file, getSVNURL(),
-		// "testing svn kit integration", true);
-		// System.out.println(importInfo);
-		// }
-		SVNCommitInfo importInfo = commitClient.doCommit(packets, false,
-				"testing svn kit integration");
+		for (File file : files) {
+			SVNCommitInfo importInfo = commitClient.doImport(file, getSVNURL(),
+					"testing svn kit integration", true);
+			System.out.println(importInfo);
+		}
+		// SVNCommitInfo importInfo = commitClient.doCommit(packets, false,
+		// "testing svn kit integration");
 		// SVNCommitInfo importInfo = commitClient.doCommit(files, false,
 		// "testing svn kit integration", true, recursive);
-		System.out.println(importInfo);
-
+		// SVNCommitInfo importInfo = commitClient.doCommit(commitPacket, false,
+		// "testing svn kit integration");
 		// SVNCommitInfo importInfo = commitClient.doCommit(files, false,
-		// "testing svn kit integration", null, null, false, false,
-		// getSVNDepth());
+		// "testing svn kit integration", new SVNProperties(), null,
+		// false, false, getSVNDepth());
+
+		// System.out.println(importInfo);
+		System.out.println(new SVNProperties());
 	}
 
 	@Override
